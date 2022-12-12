@@ -1,0 +1,164 @@
+syntax = "proto3";
+
+option go_package = "github.com/FrancoisChastel/Skynet-Blocker/";
+
+package protos;
+
+// import "google/api/annotations.proto";
+// import "google/protobuf/timestamp.proto";
+
+// SkynetBlocker expose available APIs for Anonimise and treat cv services 
+service SkynetBlocker {
+  // Anonimise service of a given csv
+  rpc Anonimise  (AnonimiseRequest) returns (AnonimiseResponse){
+    // option (google.api.http) = {
+    //   post: "/1.0.0-beta/anonimisation/"
+    //   body: "*"
+    // };
+  };
+
+  rpc SydoniaAnonimiser  (SydoniaAnonimiserRequest) returns (SydoniaAnonimiserResponse){
+    // option (google.api.http) = {
+    //   post: "/1.0.0-beta/anonimisation/"
+    //   body: "*"
+    // };
+  };
+}
+
+message SydoniaAnonimiserRequest {
+  MinioInfo minio_info = 1;
+  oneof sydoniaAnonimisationStrategy { 
+    GeneralSegmentAndSadItemStrategy sad_general_segment_and_sad_item_strategy = 2;
+  }
+}
+
+message GeneralSegmentAndSadItemStrategy {
+  SydoniaFileConfig general_segment_config = 1;
+  SydoniaFileConfig sad_item_config = 2; 
+  SerializationConfig serialization_config = 3;
+}
+
+message SydoniaFileConfig {
+  string file_path = 1;
+  map<string, ColConfig> used_cols = 2;
+  DeserializationConfig deserialization_config = 4;
+}
+
+message SydoniaAnonimiserResponse {
+  map<string, string> anonimised_file_path = 1;
+}
+
+message AnonimiseRequest {
+  MinioInfo minio_info = 1;
+  string file_path = 2;
+  map<string, ColConfig> used_cols = 3;
+  SerializationConfig serialization_config = 4;
+  oneof anonimisationStrategy { 
+    KAnonymeStrategy k_anonyme = 5;
+    NaiveStrategy naive_strategy = 6;
+    SynthetiseStrategy synthetise = 8;
+  }
+  DeserializationConfig deserialization_config = 9;
+}
+
+message AnonimiseResponse {
+  string anonimised_file_path = 1;
+  string mapper_file_path = 4;
+}
+
+message SerializationConfig {
+  string file_path = 2;
+  bool no_header = 3;
+  string separator = 5;
+}
+
+message DeserializationConfig {
+  map<string, ColConfig> used_cols = 1;
+  repeated string na_values = 2;
+  string separator = 3;
+}
+
+message KAnonymeStrategy {
+  KAnonymeAlgorithm algorithm = 1;
+}
+
+enum KAnonymeAlgorithm {
+  DATAFLY = 0;
+  INCOGNITO = 1;
+  TOPDOWN_GREEDY = 2;
+  CLASSIC_MONDRIAN = 3;
+  BASIC_MONDRIAN = 4;
+}
+
+message ColConfig {
+  ColType col_types = 1;
+  bool to_psuedonimise = 2;
+}
+
+message SynthetiseStrategy {
+  float epsilon = 1;
+}
+
+message NaiveStrategy {
+  string lang = 1;
+  map<string, CategoricalAnonimisation> categorical_cols = 2;
+  map<string, NumericAnonimisation> numerical_cols = 3;
+  map<string, DateTimeAnonimisation> datetime_cols = 4;
+}
+
+enum CategoricalAnonimisation {
+  // Synthetic data
+  CATEGORICAL_FAKE = 0;
+  // Automatic synthetic data
+  CATEGORICAL_FAKE_AUTO = 1;
+  // Resampling with preserved distribution
+  CATEGORICAL_RESAMPLING = 2;
+  // Toeknization 
+  CATEGORICAL_TOKENIZATION = 3;
+  // Email masking
+  CATEGORICAL_EMAIL_MASKING = 4;
+}
+
+enum DateTimeAnonimisation {
+  // Synthetic date
+  DATETIME_FAKE = 0;
+  // Perturbation
+  DATETIME_NOISE = 1;
+}
+
+enum NumericAnonimisation {
+  // Perturbation
+  NUMERIC_NOISE = 0;
+  // Binning
+  NUMERIC_BINNING = 1;
+  // PCA Masking
+  NUMERIC_MASKING = 2;
+  // Rounding
+  NUMERIC_ROUNDING = 3;
+}
+
+enum ColType {
+  // Automatically infer data-type
+  ColType_Infer = 0;
+  // Text or mixed numeric and non-numeric values
+  ColType_Object = 1;
+  // Integer numbers
+  ColType_Int64 = 2;
+  // Floating point numbers
+  ColType_Float64 = 3;
+  // True/False values
+  ColType_Bool = 4;
+  /// Date and time values
+  ColType_DateTime64 = 5;
+  // Differences between two datetimes
+  ColType_TimeDeltaMs = 6;
+  // Finite list of text values
+  ColType_Category = 7;
+}
+
+message MinioInfo {
+  string key = 1;
+  string secret = 2;
+  string token = 3;
+}
+
