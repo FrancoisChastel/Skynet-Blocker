@@ -1,0 +1,24 @@
+load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+load("@rules_python//python:pip.bzl", "compile_pip_requirements")
+
+gazelle_binary(
+    name = "gazelle-protobuf",
+    languages = [
+        "@bazel_gazelle//language/go",
+        "@bazel_gazelle//language/proto",
+        "@build_stack_rules_proto//language/protobuf",
+    ],
+)
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle-protobuf",
+    prefix = "github.com/Fluximmo/ArtificialImmo",
+)
+
+compile_pip_requirements(
+    name = "requirements",
+    extra_args = ["--allow-unsafe"],
+    requirements_in = "requirements.txt",
+    requirements_txt = "requirements_lock.txt",
+)

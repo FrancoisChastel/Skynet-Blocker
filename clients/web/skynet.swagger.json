@@ -1,0 +1,442 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "protos/skynet.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "SkynetBlocker"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/1.0.0-beta/anonimisation/generic": {
+      "post": {
+        "summary": "Anonimise service of a given csv",
+        "operationId": "SkynetBlocker_Anonimise",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosAnonimiseResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosAnonimiseRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SkynetBlocker"
+        ]
+      }
+    },
+    "/1.0.0-beta/anonimisation/sydonia": {
+      "post": {
+        "summary": "Anonimise service of a sydonia's tables in csv",
+        "operationId": "SkynetBlocker_SydoniaAnonimiser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosSydoniaAnonimiserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosSydoniaAnonimiserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SkynetBlocker"
+        ]
+      }
+    },
+    "/1.0.0-beta/csv/previsualize": {
+      "post": {
+        "summary": "Visualize a CSV",
+        "operationId": "SkynetBlocker_Visualizer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/protosVisualizerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/protosVisualizerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SkynetBlocker"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "protosAnonimiseRequest": {
+      "type": "object",
+      "properties": {
+        "minioInfo": {
+          "$ref": "#/definitions/protosMinioInfo"
+        },
+        "filePath": {
+          "type": "string"
+        },
+        "usedCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosColConfig"
+          }
+        },
+        "serializationConfig": {
+          "$ref": "#/definitions/protosSerializationConfig"
+        },
+        "kAnonyme": {
+          "$ref": "#/definitions/protosKAnonymeStrategy"
+        },
+        "naiveStrategy": {
+          "$ref": "#/definitions/protosNaiveStrategy"
+        },
+        "synthetise": {
+          "$ref": "#/definitions/protosSynthetiseStrategy"
+        },
+        "deserializationConfig": {
+          "$ref": "#/definitions/protosDeserializationConfig"
+        }
+      }
+    },
+    "protosAnonimiseResponse": {
+      "type": "object",
+      "properties": {
+        "anonimisedFilePath": {
+          "type": "string"
+        },
+        "mapperFilePath": {
+          "type": "string"
+        }
+      }
+    },
+    "protosAnonymApproach": {
+      "type": "string",
+      "enum": [
+        "K_Anonym",
+        "L_Diversity",
+        "T_CLOSENESS"
+      ],
+      "default": "K_Anonym"
+    },
+    "protosCategoricalAnonimisation": {
+      "type": "string",
+      "enum": [
+        "CATEGORICAL_FAKE",
+        "CATEGORICAL_FAKE_AUTO",
+        "CATEGORICAL_RESAMPLING",
+        "CATEGORICAL_TOKENIZATION",
+        "CATEGORICAL_EMAIL_MASKING"
+      ],
+      "default": "CATEGORICAL_FAKE",
+      "title": "- CATEGORICAL_FAKE: Synthetic data\n - CATEGORICAL_FAKE_AUTO: Automatic synthetic data\n - CATEGORICAL_RESAMPLING: Resampling with preserved distribution\n - CATEGORICAL_TOKENIZATION: Toeknization\n - CATEGORICAL_EMAIL_MASKING: Email masking"
+    },
+    "protosColConfig": {
+      "type": "object",
+      "properties": {
+        "colTypes": {
+          "$ref": "#/definitions/protosColType"
+        },
+        "toPsuedonimise": {
+          "type": "boolean"
+        }
+      }
+    },
+    "protosColType": {
+      "type": "string",
+      "enum": [
+        "ColType_Infer",
+        "ColType_Object",
+        "ColType_Int64",
+        "ColType_Float64",
+        "ColType_Bool",
+        "ColType_DateTime64",
+        "ColType_TimeDeltaMs",
+        "ColType_Category"
+      ],
+      "default": "ColType_Infer",
+      "title": "- ColType_Infer: Automatically infer data-type\n - ColType_Object: Text or mixed numeric and non-numeric values\n - ColType_Int64: Integer numbers\n - ColType_Float64: Floating point numbers\n - ColType_Bool: True/False values\n - ColType_DateTime64: / Date and time values\n - ColType_TimeDeltaMs: Differences between two datetimes\n - ColType_Category: Finite list of text values"
+    },
+    "protosColumn": {
+      "type": "object",
+      "properties": {
+        "colType": {
+          "$ref": "#/definitions/protosColType"
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protosDateTimeAnonimisation": {
+      "type": "string",
+      "enum": [
+        "DATETIME_FAKE",
+        "DATETIME_NOISE"
+      ],
+      "default": "DATETIME_FAKE",
+      "title": "- DATETIME_FAKE: Synthetic date\n - DATETIME_NOISE: Perturbation"
+    },
+    "protosDeserializationConfig": {
+      "type": "object",
+      "properties": {
+        "usedCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosColConfig"
+          }
+        },
+        "naValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "separator": {
+          "type": "string"
+        }
+      }
+    },
+    "protosGeneralSegmentAndSadItemStrategy": {
+      "type": "object",
+      "properties": {
+        "generalSegmentConfig": {
+          "$ref": "#/definitions/protosSydoniaFileConfig"
+        },
+        "sadItemConfig": {
+          "$ref": "#/definitions/protosSydoniaFileConfig"
+        },
+        "serializationConfig": {
+          "$ref": "#/definitions/protosSerializationConfig"
+        }
+      }
+    },
+    "protosKAnonymeStrategy": {
+      "type": "object",
+      "properties": {
+        "algorithm": {
+          "$ref": "#/definitions/protosAnonymApproach"
+        },
+        "studiedColumn": {
+          "type": "string"
+        },
+        "k": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "protosMinioInfo": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "protosNaiveStrategy": {
+      "type": "object",
+      "properties": {
+        "lang": {
+          "type": "string"
+        },
+        "categoricalCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosCategoricalAnonimisation"
+          }
+        },
+        "numericalCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosNumericAnonimisation"
+          }
+        },
+        "datetimeCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosDateTimeAnonimisation"
+          }
+        }
+      }
+    },
+    "protosNumericAnonimisation": {
+      "type": "string",
+      "enum": [
+        "NUMERIC_NOISE",
+        "NUMERIC_BINNING",
+        "NUMERIC_MASKING",
+        "NUMERIC_ROUNDING"
+      ],
+      "default": "NUMERIC_NOISE",
+      "title": "- NUMERIC_NOISE: Perturbation\n - NUMERIC_BINNING: Binning\n - NUMERIC_MASKING: PCA Masking\n - NUMERIC_ROUNDING: Rounding"
+    },
+    "protosSerializationConfig": {
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "type": "string"
+        },
+        "noHeader": {
+          "type": "boolean"
+        },
+        "separator": {
+          "type": "string"
+        }
+      }
+    },
+    "protosSydoniaAnonimiserRequest": {
+      "type": "object",
+      "properties": {
+        "minioInfo": {
+          "$ref": "#/definitions/protosMinioInfo"
+        },
+        "sadGeneralSegmentAndSadItemStrategy": {
+          "$ref": "#/definitions/protosGeneralSegmentAndSadItemStrategy"
+        }
+      }
+    },
+    "protosSydoniaAnonimiserResponse": {
+      "type": "object",
+      "properties": {
+        "anonimisedFilePath": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protosSydoniaFileConfig": {
+      "type": "object",
+      "properties": {
+        "filePath": {
+          "type": "string"
+        },
+        "usedCols": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosColConfig"
+          }
+        },
+        "deserializationConfig": {
+          "$ref": "#/definitions/protosDeserializationConfig"
+        }
+      }
+    },
+    "protosSynthetiseStrategy": {
+      "type": "object",
+      "properties": {
+        "epsilon": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "protosVisualizerRequest": {
+      "type": "object",
+      "properties": {
+        "minioInfo": {
+          "$ref": "#/definitions/protosMinioInfo"
+        }
+      }
+    },
+    "protosVisualizerResponse": {
+      "type": "object",
+      "properties": {
+        "table": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/protosColumn"
+          }
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

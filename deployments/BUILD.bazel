@@ -1,0 +1,92 @@
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image", "container_push")
+
+package(default_visibility = ["//visibility:public"])
+
+go_image(
+    name = "nlp_gateway_image_base",
+    embed = [
+        "//cmd/nlp:gateway_lib",
+    ],
+    goarch = "amd64",
+    goos = "linux",
+)
+
+container_image(
+    name = "nlp_image",
+    base = "//src:nlp_image_base",
+    ports = [
+        "50052",
+        "443",
+    ],
+)
+
+container_push(
+    name = "push_nlp",
+    format = "Docker",
+    image = ":nlp_image",
+    registry = "rg.fr-par.scw.cloud/fluximmo-data",
+    repository = "nlp-services",
+    tag = "1.2.0-beta",
+)
+
+container_image(
+    name = "nlp_gateway_image",
+    base = ":nlp_gateway_image_base",
+    ports = [
+        "80",
+    ],
+)
+
+go_image(
+    name = "estimation_gateway_image_base",
+    embed = [
+        "//cmd/estimation:gateway_lib",
+    ],
+    goarch = "amd64",
+    goos = "linux",
+)
+
+container_image(
+    name = "estimation_image",
+    base = "//src:estimation_image_base",
+    ports = [
+        "50052",
+        "443",
+    ],
+)
+
+container_push(
+    name = "push_estimation",
+    format = "Docker",
+    image = ":estimation_image",
+    registry = "rg.fr-par.scw.cloud/fluximmo-data",
+    repository = "estimation",
+    tag = "1.2.0-beta",
+)
+
+container_image(
+    name = "estimation_gateway_image",
+    base = ":estimation_gateway_image_base",
+    ports = [
+        "80",
+    ],
+)
+
+container_push(
+    name = "push_nlp_gateway",
+    format = "Docker",
+    image = ":nlp_gateway_image",
+    registry = "rg.fr-par.scw.cloud/fluximmo-data",
+    repository = "nlp-services_gateway",
+    tag = "1.2.0-beta",
+)
+
+container_push(
+    name = "push_estimation_gateway",
+    format = "Docker",
+    image = ":estimation_gateway_image",
+    registry = "rg.fr-par.scw.cloud/fluximmo-data",
+    repository = "estimation_gateway",
+    tag = "1.2.0-beta",
+)

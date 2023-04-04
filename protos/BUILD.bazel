@@ -1,0 +1,145 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@build_stack_rules_proto//rules/py:grpc_py_library.bzl", "grpc_py_library")
+load("@build_stack_rules_proto//rules/py:proto_py_library.bzl", "proto_py_library")
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@build_stack_rules_proto//rules/go:proto_go_library.bzl", "proto_go_library")
+load("@build_stack_rules_proto//rules:proto_compile.bzl", "proto_compile")
+load("@rules_proto_grpc//grpc-gateway:defs.bzl", "gateway_grpc_compile", "gateway_grpc_library", "gateway_openapiv2_compile")
+
+gateway_grpc_compile(
+    name = "api_gateway_grpc",
+    protos = ["protos_proto"],
+    visibility = ["//visibility:public"],
+)
+
+gateway_openapiv2_compile(
+    name = "swagger_api_gateway_grpc",
+    protos = ["protos_proto"],
+)
+
+gateway_grpc_library(
+    name = "api_gateway_library",
+    importpath = "github.com/FrancoisChastel/Skynet-Blocker/protos",
+    protos = ["protos_proto"],
+    visibility = ["//visibility:public"],
+    deps = ["@grpc_ecosystem_grpc_gateway//protoc-gen-openapiv2/options:options_go_proto"],
+)
+
+## Go ##
+# gazelle:proto_plugin protoc-gen-go implementation golang:protobuf:protoc-gen-go
+# gazelle:proto_rule proto_compile implementation stackb:rules_proto:proto_compile
+# gazelle:proto_rule proto_go_library implementation stackb:rules_proto:proto_go_library
+# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//reflect/protoreflect
+# gazelle:proto_rule proto_go_library deps @org_golang_google_protobuf//runtime/protoimpl
+# gazelle:proto_rule proto_go_library deps @go_googleapis//google/api:annotations_go_proto
+# gazelle:proto_rule proto_go_library resolve google/protobuf/([a-z]+).proto @org_golang_google_protobuf//types/known/${1}pb
+# gazelle:proto_rule proto_go_library visibility //visibility:public
+# gazelle:proto_language go plugin protoc-gen-go
+# gazelle:proto_language go rule proto_compile
+# gazelle:proto_language go rule proto_go_library
+# gazelle:proto_rule grpc_go_library deps @org_golang_google_protobuf//reflect/protoreflect
+# gazelle:proto_rule grpc_go_library deps @org_golang_google_protobuf//runtime/protoimpl
+# gazelle:proto_rule grpc_go_library deps @go_googleapis//google/api:annotations_go_proto
+# gazelle:proto_rule grpc_go_library deps @grpc_ecosystem_grpc_gateway//protoc-gen-openapiv2/options:options_go_proto
+# gazelle:proto_rule grpc_go_library resolve google/protobuf/([a-z]+).proto @org_golang_google_protobuf//types/known/${1}pb
+# gazelle:proto_rule grpc_go_library visibility //visibility:public
+
+##  Python ##
+# gazelle:proto_plugin python implementation builtin:python
+# gazelle:proto_plugin pyi implementation builtin:pyi
+# gazelle:proto_plugin protoc-gen-grpc-python implementation grpc:grpc:protoc-gen-grpc-python
+# gazelle:proto_rule proto_python_library implementation stackb:rules_proto:proto_py_library
+# gazelle:proto_rule proto_python_library deps @com_google_protobuf//:protobuf_python
+# gazelle:proto_rule proto_python_library visibility //visibility:public
+# gazelle:proto_rule grpc_py_library implementation stackb:rules_proto:grpc_py_library
+# gazelle:proto_rule grpc_py_library visibility //visibility:public
+# gazelle:proto_language python plugin python
+# gazelle:proto_language python plugin pyi
+# gazelle:proto_language python plugin protoc-gen-grpc-python
+# gazelle:proto_language python rule proto_compile
+# gazelle:proto_language python rule proto_python_library
+# gazelle:proto_language python rule grpc_py_library
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "skynet.pb.go",
+        "skynet.pb.gw.go",
+        "skynet_grpc.pb.go",
+    ],
+    importpath = "github.com/FrancoisChastel/Skynet-Blocker/protos",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//protoc-gen-openapiv2/options:go_default_library",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//runtime:go_default_library",
+        "@com_github_grpc_ecosystem_grpc_gateway_v2//utilities:go_default_library",
+        "@go_googleapis//google/api:annotations_go_proto",
+        "@org_golang_google_grpc//:go_default_library",
+        "@org_golang_google_grpc//codes:go_default_library",
+        "@org_golang_google_grpc//grpclog:go_default_library",
+        "@org_golang_google_grpc//metadata:go_default_library",
+        "@org_golang_google_grpc//status:go_default_library",
+        "@org_golang_google_protobuf//proto:go_default_library",
+        "@org_golang_google_protobuf//reflect/protoreflect:go_default_library",
+        "@org_golang_google_protobuf//runtime/protoimpl:go_default_library",
+        "@org_golang_google_protobuf//types/known/timestamppb:go_default_library",
+    ],
+)
+
+proto_library(
+    name = "protos_proto",
+    srcs = ["skynet.proto"],
+    visibility = ["//visibility:public"],
+    deps = ["@go_googleapis//google/api:annotations_proto"],
+)
+
+proto_compile(
+    name = "protos_go_compile",
+    output_mappings = ["skynet.pb.go=github.com/FrancoisChastel/Skynet-Blocker/skynet.pb.go"],
+    outputs = ["skynet.pb.go"],
+    plugins = ["@build_stack_rules_proto//plugin/golang/protobuf:protoc-gen-go"],
+    proto = "protos_proto",
+)
+
+proto_go_library(
+    name = "protos_go_proto",
+    srcs = ["skynet.pb.go"],
+    importpath = "github.com/FrancoisChastel/Skynet-Blocker/",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@go_googleapis//google/api:annotations_go_proto",
+        "@grpc_ecosystem_grpc_gateway//protoc-gen-openapiv2/options",
+        "@org_golang_google_protobuf//reflect/protoreflect",
+        "@org_golang_google_protobuf//runtime/protoimpl",
+        "@org_golang_google_protobuf//types/known/timestamppb",
+    ],
+)
+
+grpc_py_library(
+    name = "protos_grpc_py_library",
+    srcs = ["skynet_pb2_grpc.py"],
+    visibility = ["//visibility:public"],
+    deps = [":protos_py_library"],
+)
+
+proto_compile(
+    name = "protos_python_compile",
+    outputs = [
+        "skynet_pb2.py",
+        "skynet_pb2.pyi",
+        "skynet_pb2_grpc.py",
+    ],
+    plugins = [
+        "@build_stack_rules_proto//plugin/builtin:pyi",
+        "@build_stack_rules_proto//plugin/builtin:python",
+        "@build_stack_rules_proto//plugin/grpc/grpc:protoc-gen-grpc-python",
+    ],
+    proto = "protos_proto",
+)
+
+proto_py_library(
+    name = "protos_py_library",
+    srcs = ["skynet_pb2.py"],
+    visibility = ["//visibility:public"],
+    deps = ["@com_google_protobuf//:protobuf_python"],
+)
