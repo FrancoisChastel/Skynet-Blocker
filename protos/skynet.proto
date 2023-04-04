@@ -4,25 +4,46 @@ option go_package = "github.com/FrancoisChastel/Skynet-Blocker/";
 
 package protos;
 
-// import "google/api/annotations.proto";
+import "google/api/annotations.proto";
 // import "google/protobuf/timestamp.proto";
 
 // SkynetBlocker expose available APIs for Anonimise and treat cv services 
 service SkynetBlocker {
   // Anonimise service of a given csv
   rpc Anonimise  (AnonimiseRequest) returns (AnonimiseResponse){
-    // option (google.api.http) = {
-    //   post: "/1.0.0-beta/anonimisation/"
-    //   body: "*"
-    // };
+    option (google.api.http) = {
+      post: "/1.0.0-beta/anonimisation/generic"
+      body: "*"
+    };
   };
-
+  // Anonimise service of a sydonia's tables in csv
   rpc SydoniaAnonimiser  (SydoniaAnonimiserRequest) returns (SydoniaAnonimiserResponse){
-    // option (google.api.http) = {
-    //   post: "/1.0.0-beta/anonimisation/"
-    //   body: "*"
-    // };
+    option (google.api.http) = {
+      post: "/1.0.0-beta/anonimisation/sydonia"
+      body: "*"
+    };
   };
+  // Visualize a CSV
+  rpc Visualizer  (VisualizerRequest) returns (VisualizerResponse){
+    option (google.api.http) = {
+      post: "/1.0.0-beta/csv/previsualize"
+      body: "*"
+    };
+  };
+}
+
+
+message VisualizerRequest {
+  MinioInfo minio_info = 1;
+}
+
+message VisualizerResponse {
+  map<string, Column> table = 1;
+}
+
+message Column {
+  ColType col_type = 1;
+  repeated string values = 2;
 }
 
 message SydoniaAnonimiserRequest {
@@ -62,8 +83,8 @@ message AnonimiseRequest {
 }
 
 message AnonimiseResponse {
-  string anonimised_file_path = 1;
-  string mapper_file_path = 4;
+  string anonimised_file_path = 2;
+  string mapper_file_path = 3;
 }
 
 message SerializationConfig {
@@ -79,15 +100,15 @@ message DeserializationConfig {
 }
 
 message KAnonymeStrategy {
-  KAnonymeAlgorithm algorithm = 1;
+  AnonymApproach algorithm = 1;
+  string studied_column = 2;
+  int32 k = 3;
 }
 
-enum KAnonymeAlgorithm {
-  DATAFLY = 0;
-  INCOGNITO = 1;
-  TOPDOWN_GREEDY = 2;
-  CLASSIC_MONDRIAN = 3;
-  BASIC_MONDRIAN = 4;
+enum AnonymApproach {
+  K_Anonym = 0;
+  L_Diversity = 1;
+  T_CLOSENESS = 2;
 }
 
 message ColConfig {
