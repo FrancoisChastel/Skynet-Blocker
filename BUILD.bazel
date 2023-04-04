@@ -13,7 +13,7 @@ gazelle_binary(
 gazelle(
     name = "gazelle",
     gazelle = ":gazelle-protobuf",
-    prefix = "github.com/Fluximmo/ArtificialImmo",
+    prefix = "github.com/FrancoisChastel/Skynet-Blocker",
 )
 
 compile_pip_requirements(
