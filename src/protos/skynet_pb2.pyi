@@ -215,10 +215,12 @@ class SynthetiseStrategy(_message.Message):
     def __init__(self, epsilon: _Optional[float] = ...) -> None: ...
 
 class VisualizerRequest(_message.Message):
-    __slots__ = ["minio_info"]
+    __slots__ = ["file_path", "minio_info"]
+    FILE_PATH_FIELD_NUMBER: _ClassVar[int]
     MINIO_INFO_FIELD_NUMBER: _ClassVar[int]
+    file_path: str
     minio_info: MinioInfo
-    def __init__(self, minio_info: _Optional[_Union[MinioInfo, _Mapping]] = ...) -> None: ...
+    def __init__(self, minio_info: _Optional[_Union[MinioInfo, _Mapping]] = ..., file_path: _Optional[str] = ...) -> None: ...
 
 class VisualizerResponse(_message.Message):
     __slots__ = ["table"]

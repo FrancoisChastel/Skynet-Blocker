@@ -1,12 +1,12 @@
-from protos import protos
+from src.protos import skynet_pb2
 import s3fs
 import pandas as pd
 import hashlib
 from io import StringIO
 
 
-def anonimise_sydonia(request: protos.SydoniaAnonimiserRequest) -> protos.SydoniaAnonimiserResponse:
-    fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': '<INSERT_S3_URL>'},
+def anonimise_sydonia(request: skynet_pb2.SydoniaAnonimiserRequest) -> skynet_pb2.SydoniaAnonimiserResponse:
+    fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'https://'+'minio.k8s-nxt-01.datafid.world'},
                            key=request.minio_info.key,
                            secret=request.minio_info.secret,
                            token=request.minio_info.token,
@@ -14,8 +14,8 @@ def anonimise_sydonia(request: protos.SydoniaAnonimiserRequest) -> protos.Sydoni
     return SadGeneralSadItemAnonimiser(request.sad_general_segment_and_sad_item_strategy, fs)
 
 
-def SadGeneralSadItemAnonimiser(conf: protos.GeneralSegmentAndSadItemStrategy, fs: s3fs.S3FileSystem) -> protos.SydoniaAnonimiserResponse:
-    protos.DeserializationConfig
+def SadGeneralSadItemAnonimiser(conf: skynet_pb2.GeneralSegmentAndSadItemStrategy, fs: s3fs.S3FileSystem) -> skynet_pb2.SydoniaAnonimiserResponse:
+    skynet_pb2.DeserializationConfig
     with fs.open(conf.general_segment_config.file_path, 'rb') as file_in:
         df_general_segment = pd.read_csv(file_in,
                                          low_memory=False,
@@ -69,6 +69,6 @@ def SadGeneralSadItemAnonimiser(conf: protos.GeneralSegmentAndSadItemStrategy, f
     return df_asycuda, conf
 
 
-def anonimise_md5_value(hash_md5: hashlib._Hash, value: str):
+def anonimise_md5_value(hash_md5: any, value: str):
     hash_md5 = hash_md5.update(value)
     hash_md5.hexdigest()

@@ -36,25 +36,21 @@ apiKey = "479b886d-8be9-4aac-bd0b-7ee9025c1ea9"
 
 class SkynetServer(skynet_pb2_grpc.SkynetBlocker):
     """Provides methods that implement functionality of skynet server."""
-    sydonia: sydonia_anomisation.anonimise_sydonia
-    generalAnonimisation: anonimisation.anonimise
-    visualize: anonimisation.visualize
 
     def __init__(self) -> None:
         pass
 
-    @staticmethod
     def Anonimise(self, request: skynet_pb2.AnonimiseRequest,
                   unused_context) -> skynet_pb2.AnonimiseResponse:
-        return self.generalAnonimisation(request)
+        return sydonia_anomisation.anonimise_sydonia(request)
 
     def SydoniaAnonimiser(self, request: skynet_pb2.SydoniaAnonimiserRequest,
                           unused_context) -> skynet_pb2.SydoniaAnonimiserResponse:
-        return self.sydonia(request)
+        return anonimisation.anonimise(request)
 
     def Visualizer(self, request: skynet_pb2.VisualizerRequest,
                    unused_context) -> skynet_pb2.VisualizerRequest:
-        return self.visualize(request)
+        return anonimisation.visualize(request)
 
 
 def _toggle_health(health_servicer: health.HealthServicer, service: str):
@@ -91,11 +87,7 @@ def serve():
     skynet_pb2_grpc.add_SkynetBlockerServicer_to_server(
         backend, server)
     health_server.add_insecure_port('[::]:' + port)
-    server.add_insecure_port('[::]:' + "443",
-                             grpc.metadata_call_credentials(
-                                 AuthInterceptor(
-                                     apiKey)
-                             ))
+    server.add_insecure_port('[::]:443')
 
     _configure_health_server(health_server)
     server.start()

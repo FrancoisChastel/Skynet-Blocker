@@ -1,0 +1,65 @@
+load("@pypi//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary")
+load("@io_bazel_rules_docker//python3:image.bzl", "py3_image")
+
+package(default_visibility = ["//visibility:public"])
+
+py_binary(
+    name = "anonimisation",
+    srcs = [
+        "anonimisation.py",
+        "server.py",
+        "sydonia_anomisation.py",
+        "//src/protos:builder.py",
+        "//src/protos:skynet_pb2.py",
+        "//src/protos:skynet_pb2_grpc.py",
+    ],
+    main = "server.py",
+    deps = [
+        requirement("grpcio"),
+        requirement("googleapis-common-protos"),
+        requirement("protobuf"),
+        requirement("numpy"),
+        requirement("requests"),
+        requirement("pandas"),
+        requirement("s3fs"),
+        requirement("ds4ml"),
+        requirement("grpcio-health-checking"),
+        requirement("grpc-gateway-protoc-gen-openapiv2"),
+        requirement("anonypy"),
+        requirement("pyyaml"),
+        requirement("cape-privacy"),
+        requirement("faker"),
+        requirement("texttable"),
+    ],
+)
+
+py3_image(
+    name = "anonimisation_image_base",
+    srcs = [
+        "anonimisation.py",
+        "server.py",
+        "sydonia_anomisation.py",
+        "//src/protos:builder.py",
+        "//src/protos:skynet_pb2.py",
+        "//src/protos:skynet_pb2_grpc.py",
+    ],
+    main = "anonimisation.py",
+    deps = [
+        requirement("grpcio"),
+        requirement("googleapis-common-protos"),
+        requirement("protobuf"),
+        requirement("numpy"),
+        requirement("requests"),
+        requirement("pandas"),
+        requirement("s3fs"),
+        requirement("ds4ml"),
+        requirement("grpcio-health-checking"),
+        requirement("grpc-gateway-protoc-gen-openapiv2"),
+        requirement("anonypy"),
+        requirement("pyyaml"),
+        requirement("cape-privacy"),
+        requirement("faker"),
+        requirement("texttable"),
+    ],
+)

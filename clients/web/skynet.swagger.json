@@ -406,6 +406,9 @@
       "properties": {
         "minioInfo": {
           "$ref": "#/definitions/protosMinioInfo"
+        },
+        "filePath": {
+          "type": "string"
         }
       }
     },

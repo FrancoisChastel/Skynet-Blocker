@@ -35,6 +35,7 @@ service SkynetBlocker {
 
 message VisualizerRequest {
   MinioInfo minio_info = 1;
+  string file_path = 2;
 }
 
 message VisualizerResponse {

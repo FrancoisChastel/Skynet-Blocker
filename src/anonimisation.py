@@ -3,7 +3,7 @@ from src.protos import skynet_pb2
 import s3fs
 import pandas as pd
 import numpy as np
-from anonympy.pandas import dfAnonymizer
+from anonympy.core_pandas import dfAnonymizer
 import anonypy
 from io import StringIO
 
@@ -83,7 +83,7 @@ def naive(df: pd.DataFrame, config: skynet_pb2.NaiveStrategy, request: skynet_pb
         elif anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_NOISE:
             mean = df[numerical_col].mean()/10
             anonimised_df.numeric_noise(
-                columns=numerical_col, inplace=True, MIN=-mean, MIN=mean)
+                columns=numerical_col, inplace=True, MIN=-mean, MAX=mean)
         elif anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_ROUNDING:
             anonimised_df.numeric_rounding(
                 columns=numerical_col, inplace=True)
@@ -125,22 +125,22 @@ def visualize(request: skynet_pb2.VisualizerRequest) -> skynet_pb2.VisualizerRes
                            token=request.minio_info.token,
                            )
     df = pd.DataFrame()
-
     with fs.open(request.file_path, 'rb') as file_in:
         df = pd.read_csv(file_in,
                          low_memory=False)
 
-    table = {}
+    table = dict()
     for key, value in df.dtypes.to_dict().items():
-        column: skynet_pb2.Column = skynet_pb2.Column()
+        col_type = from_dtype_to_coltype(value)
+        values = []
         if (len(df[key]) < 30):
-            column.values = df[key].head(len(df[key])).to_list()
+            values = df[key].astype(str).head(len(df[key])).to_list()
         else:
-            column.values = df[key].head(30).to_list()
-        column.col_type = from_dtype_to_coltype(value)
-        column.values
-        table[key] = column
-
+            values = df[key].astype(str).head(30).to_list()
+        table[key] = skynet_pb2.Column(
+            values=values,
+            col_type=col_type
+        )
     return skynet_pb2.VisualizerResponse(table=table)
 
 

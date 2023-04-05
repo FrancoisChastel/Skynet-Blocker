@@ -20,16 +20,14 @@ update-requirements:
 	bazel run //:requirements.update
 
 publish:
-	bazel run //deployments:push_estimation --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
-	bazel run //deployments:push_estimation_gateway --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
-	bazel run //deployments:push_nlp --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
-	bazel run //deployments:push_nlp_gateway --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
+	bazel run //deployments:docker_push --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
+	bazel run //deployments:docker_push_gateway --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
 
 launch:
-	docker run -v /Users/darkraven/Dev/go/src/github.com/Fluximmo/ArtificialImmo:/bazel -u 0 --interactive --entrypoint=/bin/bash gcr.io/bazel-public/bazel:latest 
+	docker run -v /Users/darkraven/Dev/go/src/github.com/FrancoisChastel/Skynet-Blocker:/bazel -u 0 --interactive --entrypoint=/bin/bash gcr.io/bazel-public/bazel:latest 
 
 registry-login:
-	docker login rg.fr-par.scw.cloud/fluximmo-data -u nologin -p fe4f7739-3f8e-472f-ab8a-9b9241a33330
+	docker login --username francoischastel --password dckr_pat__B-u4kTAP6JQcNe2Pcr75Lw40_M
 
 docker-install:
 	apt-get install \
