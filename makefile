@@ -19,6 +19,13 @@ update-requirements:
 	pip3 freeze > requirements.txt
 	bazel run //:requirements.update
 
+run: 
+	bazel run //src:anonimisation
+
+gateway:
+	bazel run //cmd/gateway:main
+
+
 publish:
 	bazel run //deployments:docker_push --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
 	bazel run //deployments:docker_push_gateway --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 
