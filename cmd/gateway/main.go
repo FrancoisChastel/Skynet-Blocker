@@ -5,6 +5,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	gateway "github.com/FrancoisChastel/Skynet-Blocker/gatewayutils"
 	Skynet_Blocker "github.com/FrancoisChastel/Skynet-Blocker/protos"
@@ -15,7 +16,7 @@ import (
 )
 
 var (
-	endpoint   = flag.String("endpoint", "localhost:443", "endpoint of the Elastimmo gRPC service")
+	endpoint   = flag.String("endpoint", "localhost:3032", "endpoint of the Elastimmo gRPC service")
 	network    = flag.String("network", "tcp", `one of "tcp" or "unix". Must be consistent to -endpoint`)
 	swaggerDir = flag.String("swagger_dir", "clients/web", "path to the directory which contains swagger definitions")
 )
@@ -24,9 +25,10 @@ func main() {
 	flag.Parse()
 	defer glog.Flush()
 
+	fmt.Println("listening on port 3030")
 	ctx := context.Background()
 	opts := gateway.Options{
-		Addr: ":80",
+		Addr: ":3030",
 		GRPCServer: gateway.Endpoint{
 			Network: *network,
 			Addr:    *endpoint,

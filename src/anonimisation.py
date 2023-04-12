@@ -3,7 +3,7 @@ from src.protos import skynet_pb2
 import s3fs
 import pandas as pd
 import numpy as np
-from anonympy.core_pandas import dfAnonymizer
+from core_pandas import dfAnonymizer
 import anonypy
 from io import StringIO
 
@@ -127,16 +127,16 @@ def visualize(request: skynet_pb2.VisualizerRequest) -> skynet_pb2.VisualizerRes
     df = pd.DataFrame()
     with fs.open(request.file_path, 'rb') as file_in:
         df = pd.read_csv(file_in,
-                         low_memory=False)
+                         low_memory=False, nrows=100)
 
     table = dict()
     for key, value in df.dtypes.to_dict().items():
         col_type = from_dtype_to_coltype(value)
         values = []
-        if (len(df[key]) < 30):
+        if (len(df[key]) < 100):
             values = df[key].astype(str).head(len(df[key])).to_list()
         else:
-            values = df[key].astype(str).head(30).to_list()
+            values = df[key].astype(str).head(100).to_list()
         table[key] = skynet_pb2.Column(
             values=values,
             col_type=col_type

@@ -7,9 +7,12 @@ package(default_visibility = ["//visibility:public"])
 py_binary(
     name = "anonimisation",
     srcs = [
+        "__init__.py",
         "anonimisation.py",
+        "core_pandas.py",
         "server.py",
         "sydonia_anomisation.py",
+        "utils_pandas.py",
         "//src/protos:builder.py",
         "//src/protos:skynet_pb2.py",
         "//src/protos:skynet_pb2_grpc.py",
@@ -37,14 +40,17 @@ py_binary(
 py3_image(
     name = "anonimisation_image_base",
     srcs = [
+        "__init__.py",
         "anonimisation.py",
+        "core_pandas.py",
         "server.py",
         "sydonia_anomisation.py",
+        "utils_pandas.py",
         "//src/protos:builder.py",
         "//src/protos:skynet_pb2.py",
         "//src/protos:skynet_pb2_grpc.py",
     ],
-    main = "anonimisation.py",
+    main = "server.py",
     deps = [
         requirement("grpcio"),
         requirement("googleapis-common-protos"),

@@ -9,8 +9,9 @@ from grpc_health.v1 import health_pb2_grpc
 from grpc_health.v1 import health_pb2
 from grpc_health.v1 import health
 
-from src.protos import skynet_pb2_grpc, skynet_pb2
-from src import sydonia_anomisation, anonimisation
+from protos import skynet_pb2_grpc, skynet_pb2
+import sydonia_anomisation
+import anonimisation
 
 
 class AuthInterceptor(grpc.aio.ServerInterceptor):
@@ -30,7 +31,7 @@ class AuthInterceptor(grpc.aio.ServerInterceptor):
 
 
 apiVersion = "1.1.0-beta"
-port = "50052"
+port = "3031"
 apiKey = "479b886d-8be9-4aac-bd0b-7ee9025c1ea9"
 
 
@@ -87,12 +88,14 @@ def serve():
     skynet_pb2_grpc.add_SkynetBlockerServicer_to_server(
         backend, server)
     health_server.add_insecure_port('[::]:' + port)
-    server.add_insecure_port('[::]:443')
+    server.add_insecure_port('[::]:3032')
 
     _configure_health_server(health_server)
     server.start()
     health_server.start()
-    print("Server started, listening on " + port)
+    print("Health started, listening on " + port)
+    print("Server started, listening on 3032")
+
     server.wait_for_termination()
     health_server.wait_for_termination()
 
