@@ -36,7 +36,7 @@ container_push(
     image = ":skynet_image",
     registry = "index.docker.io",
     repository = "francoischastel/skynet-blocker",
-    tag = "1.1.21-beta",
+    tag = "1.1.22-beta",
 )
 
 container_push(
@@ -45,5 +45,5 @@ container_push(
     image = ":skynet_gateway_image",
     registry = "index.docker.io",
     repository = "francoischastel/skynet-blocker",
-    tag = "1.1.21-gateway-beta",
+    tag = "1.1.22-gateway-beta",
 )

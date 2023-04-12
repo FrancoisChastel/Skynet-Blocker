@@ -1,0 +1,19 @@
+version: "2"
+
+services:
+  skynet-gateway:
+    restart: always
+    image: registry.hub.docker.com/francoischastel/skynet-blocker:1.1.21-gateway-beta
+    environment:
+      - VIRTUAL_HOST=anonymisation.sudoers.fr
+      - LETSENCRYPT_HOST=anonymisation.sudoers.fr
+      - LETSENCRYPT_EMAIL=francois@chastel.co
+    depends_on:
+      - skynet-backend
+    ports:
+      - "3030:3030"
+  skynet-backend:
+    restart: always
+    image: registry.hub.docker.com/francoischastel/skynet-blocker:1.1.21-beta
+    ports:
+      - "50052:50052"
