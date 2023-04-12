@@ -13,6 +13,7 @@ from faker import Faker
 import utils_pandas as _utils
 
 from sklearn.decomposition import PCA
+print("imported core_pandas")
 
 
 class dfAnonymizer(object):

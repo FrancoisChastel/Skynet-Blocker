@@ -1,11 +1,13 @@
+from io import StringIO
+import anonypy
+from core_pandas import dfAnonymizer
 from ds4ml import DataSet
 from src.protos import skynet_pb2
 import s3fs
 import pandas as pd
 import numpy as np
-from core_pandas import dfAnonymizer
-import anonypy
-from io import StringIO
+print("imported anonimsation")
+
 
 
 def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseResponse:

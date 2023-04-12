@@ -43,15 +43,24 @@ class SkynetServer(skynet_pb2_grpc.SkynetBlocker):
 
     def Anonimise(self, request: skynet_pb2.AnonimiseRequest,
                   unused_context) -> skynet_pb2.AnonimiseResponse:
-        return sydonia_anomisation.anonimise_sydonia(request)
+        try:
+            return sydonia_anomisation.anonimise_sydonia(request)
+        except Exception as e:
+            return e
 
     def SydoniaAnonimiser(self, request: skynet_pb2.SydoniaAnonimiserRequest,
                           unused_context) -> skynet_pb2.SydoniaAnonimiserResponse:
-        return anonimisation.anonimise(request)
+        try:
+            return anonimisation.anonimise(request)
+        except Exception as e:
+            return e
 
     def Visualizer(self, request: skynet_pb2.VisualizerRequest,
                    unused_context) -> skynet_pb2.VisualizerRequest:
-        return anonimisation.visualize(request)
+        try:
+            return anonimisation.visualize(request)
+        except Exception as e:
+            return e
 
 
 def _toggle_health(health_servicer: health.HealthServicer, service: str):
@@ -100,6 +109,10 @@ def serve():
     health_server.wait_for_termination()
 
 
+print("running")
+
 if __name__ == '__main__':
     logging.basicConfig()
+    serve()
+else:
     serve()
