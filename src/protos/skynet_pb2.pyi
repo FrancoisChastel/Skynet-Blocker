@@ -117,6 +117,12 @@ class KAnonymeStrategy(_message.Message):
     studied_column: str
     def __init__(self, algorithm: _Optional[_Union[AnonymApproach, str]] = ..., studied_column: _Optional[str] = ..., k: _Optional[int] = ...) -> None: ...
 
+class LightDeserializationConfig(_message.Message):
+    __slots__ = ["separator"]
+    SEPARATOR_FIELD_NUMBER: _ClassVar[int]
+    separator: str
+    def __init__(self, separator: _Optional[str] = ...) -> None: ...
+
 class MinioInfo(_message.Message):
     __slots__ = ["key", "secret", "token"]
     KEY_FIELD_NUMBER: _ClassVar[int]
@@ -215,12 +221,14 @@ class SynthetiseStrategy(_message.Message):
     def __init__(self, epsilon: _Optional[float] = ...) -> None: ...
 
 class VisualizerRequest(_message.Message):
-    __slots__ = ["file_path", "minio_info"]
+    __slots__ = ["deserialization_config", "file_path", "minio_info"]
+    DESERIALIZATION_CONFIG_FIELD_NUMBER: _ClassVar[int]
     FILE_PATH_FIELD_NUMBER: _ClassVar[int]
     MINIO_INFO_FIELD_NUMBER: _ClassVar[int]
+    deserialization_config: LightDeserializationConfig
     file_path: str
     minio_info: MinioInfo
-    def __init__(self, minio_info: _Optional[_Union[MinioInfo, _Mapping]] = ..., file_path: _Optional[str] = ...) -> None: ...
+    def __init__(self, minio_info: _Optional[_Union[MinioInfo, _Mapping]] = ..., file_path: _Optional[str] = ..., deserialization_config: _Optional[_Union[LightDeserializationConfig, _Mapping]] = ...) -> None: ...
 
 class VisualizerResponse(_message.Message):
     __slots__ = ["table"]

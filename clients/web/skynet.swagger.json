@@ -288,6 +288,14 @@
         }
       }
     },
+    "protosLightDeserializationConfig": {
+      "type": "object",
+      "properties": {
+        "separator": {
+          "type": "string"
+        }
+      }
+    },
     "protosMinioInfo": {
       "type": "object",
       "properties": {
@@ -409,6 +417,9 @@
         },
         "filePath": {
           "type": "string"
+        },
+        "deserializationConfig": {
+          "$ref": "#/definitions/protosLightDeserializationConfig"
         }
       }
     },
