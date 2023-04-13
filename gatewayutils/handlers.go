@@ -14,13 +14,11 @@ import (
 // swaggerServer returns swagger specification files located under "/swagger/"
 func swaggerServer(dir string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		print(r.URL.Path, !strings.HasSuffix(r.URL.Path, ".swagger.json"), "\r\n")
 		if !strings.HasSuffix(r.URL.Path, ".swagger.json") {
 			glog.Errorf("Not Found: %s", r.URL.Path)
 			http.NotFound(w, r)
 			return
 		}
-		print(dir, "mere", "\r\n")
 
 		glog.Infof("Serving %s", r.URL.Path)
 
