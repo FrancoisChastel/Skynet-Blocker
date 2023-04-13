@@ -9,7 +9,6 @@ import numpy as np
 print("imported anonimsation")
 
 
-
 def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseResponse:
     fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'https://'+'minio.k8s-nxt-01.datafid.world'},
                            key=request.minio_info.key,
@@ -129,7 +128,9 @@ def visualize(request: skynet_pb2.VisualizerRequest) -> skynet_pb2.VisualizerRes
     df = pd.DataFrame()
     with fs.open(request.file_path, 'rb') as file_in:
         df = pd.read_csv(file_in,
-                         low_memory=False, nrows=100)
+                         low_memory=False, nrows=100,
+                         sep=request.deserialization_config.separator,
+                         )
 
     table = dict()
     for key, value in df.dtypes.to_dict().items():

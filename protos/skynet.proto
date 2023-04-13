@@ -36,6 +36,7 @@ service SkynetBlocker {
 message VisualizerRequest {
   MinioInfo minio_info = 1;
   string file_path = 2;
+  LightDeserializationConfig deserialization_config = 3;
 }
 
 message VisualizerResponse {
@@ -92,6 +93,10 @@ message SerializationConfig {
   string file_path = 2;
   bool no_header = 3;
   string separator = 5;
+}
+
+message LightDeserializationConfig  {
+  string separator = 1;
 }
 
 message DeserializationConfig {
