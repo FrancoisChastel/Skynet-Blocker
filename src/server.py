@@ -43,11 +43,11 @@ class SkynetServer(skynet_pb2_grpc.SkynetBlocker):
 
     def Anonimise(self, request: skynet_pb2.AnonimiseRequest,
                   unused_context) -> skynet_pb2.AnonimiseResponse:
-        return sydonia_anomisation.anonimise_sydonia(request)
+        return anonimisation.anonimise(request)
 
     def SydoniaAnonimiser(self, request: skynet_pb2.SydoniaAnonimiserRequest,
                           unused_context) -> skynet_pb2.SydoniaAnonimiserResponse:
-        return anonimisation.anonimise(request)
+        return sydonia_anomisation.anonimise_sydonia(request)
 
     def Visualizer(self, request: skynet_pb2.VisualizerRequest,
                    unused_context) -> skynet_pb2.VisualizerRequest:
