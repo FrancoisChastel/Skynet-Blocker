@@ -21,8 +21,7 @@ def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseRespo
                          usecols=[
                              key for key in request.deserialization_config.used_cols.keys()],
                          sep=request.deserialization_config.separator,
-                         dtype=request.deserialization_config.used_cols,
-                         na_values=[na_value for na_value in request.deserialization_config.na_values])
+                         dtype=request.deserialization_config.used_cols)
 
     if ("k_anonyme" == request.WhichOneof('anonimisationStrategy')):
         df = kanonyme(df, request.k_anonyme, request)
