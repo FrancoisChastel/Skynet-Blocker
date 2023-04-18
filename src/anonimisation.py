@@ -18,8 +18,8 @@ def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseRespo
     with fs.open(request.file_path, 'rb') as file_in:
         df = pd.read_csv(file_in,
                          low_memory=False,
-                         usecols=request.deserialization_config.used_cols.keys()[
-                             0],
+                         usecols=[
+                             key for key in request.deserialization_config.used_cols.keys()],
                          sep=request.deserialization_config.separator,
                          dtype=request.deserialization_config.used_cols,
                          na_values=request.deserialization_config.na_values)
