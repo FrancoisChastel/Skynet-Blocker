@@ -48,8 +48,9 @@ def synthetise(df: pd.DataFrame, config: skynet_pb2.SynthetiseStrategy, request:
     ) if (request.used_cols[used_col].col_types == skynet_pb2.ColType_Category)])
 
     return dataset.synthesize(epsilon=config.epsilon,
-                              records=request.serialization_config.records_limit,
-                              retains=list(request.used_cols.keys()))
+                              records=15000,
+                              retains=[
+                                  key for key in request.used_cols.keys()])
 
 
 def naive(df: pd.DataFrame, config: skynet_pb2.NaiveStrategy, request: skynet_pb2.AnonimiseRequest) -> pd.DataFrame:
