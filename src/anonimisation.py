@@ -45,7 +45,7 @@ def synthetise(df: pd.DataFrame, config: skynet_pb2.SynthetiseStrategy, request:
     df.dropna(axis=0, how='all', inplace=True)
 
     dataset = DataSet(df, categories=[used_col for used_col in request.used_cols.keys(
-    ) if (request.used_cols[used_col].col_types == skynet_pb2.ColType.ColType_Category)])
+    ) if (request.used_cols[used_col].col_types == skynet_pb2.ColType_Category)])
 
     return dataset.synthesize(epsilon=config.epsilon,
                               records=request.serialization_config.records_limit,
@@ -57,44 +57,44 @@ def naive(df: pd.DataFrame, config: skynet_pb2.NaiveStrategy, request: skynet_pb
 
     for categorical_col in config.categorical_cols.keys():
         anonimisation_strategy = config.categorical_cols[categorical_col]
-        if anonimisation_strategy == skynet_pb2.CategoricalAnonimisation.CATEGORICAL_EMAIL_MASKING:
+        if anonimisation_strategy == skynet_pb2.CATEGORICAL_EMAIL_MASKING:
             anonimised_df.categorical_email_masking(
                 columns=categorical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.CategoricalAnonimisation.CATEGORICAL_FAKE:
+        elif anonimisation_strategy == skynet_pb2.CATEGORICAL_FAKE:
             anonimised_df.categorical_fake(
                 columns=categorical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.CategoricalAnonimisation.CATEGORICAL_FAKE_AUTO:
+        elif anonimisation_strategy == skynet_pb2.CATEGORICAL_FAKE_AUTO:
             anonimised_df.categorical_fake_auto(
                 columns=categorical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.CategoricalAnonimisation.CATEGORICAL_RESAMPLING:
+        elif anonimisation_strategy == skynet_pb2.CATEGORICAL_RESAMPLING:
             anonimised_df.categorical_resampling(
                 columns=categorical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.CategoricalAnonimisation.CATEGORICAL_TOKENIZATION:
+        elif anonimisation_strategy == skynet_pb2.CATEGORICAL_TOKENIZATION:
             anonimised_df.categorical_tokenization(
                 columns=categorical_col, inplace=True)
 
     for numerical_col in config.numerical_cols.keys():
         anonimisation_strategy = config.numerical_cols[numerical_col]
-        if anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_BINNING:
+        if anonimisation_strategy == skynet_pb2.NUMERIC_BINNING:
             anonimised_df.numeric_binning(
                 columns=numerical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_MASKING:
+        elif anonimisation_strategy == skynet_pb2.NUMERIC_MASKING:
             anonimised_df.numeric_masking(
                 columns=numerical_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_NOISE:
+        elif anonimisation_strategy == skynet_pb2.NUMERIC_NOISE:
             mean = df[numerical_col].mean()/10
             anonimised_df.numeric_noise(
                 columns=numerical_col, inplace=True, MIN=-mean, MAX=mean)
-        elif anonimisation_strategy == skynet_pb2.NumericAnonimisation.NUMERIC_ROUNDING:
+        elif anonimisation_strategy == skynet_pb2.NUMERIC_ROUNDING:
             anonimised_df.numeric_rounding(
                 columns=numerical_col, inplace=True)
 
     for datetime_col in config.datetime_cols.keys():
         anonimisation_strategy = config.datetime_cols[datetime_col]
-        if anonimisation_strategy == skynet_pb2.DateTimeAnonimisation.DATETIME_FAKE:
+        if anonimisation_strategy == skynet_pb2.DATETIME_FAKE:
             anonimised_df.datetime_fake(
                 columns=datetime_col, inplace=True)
-        elif anonimisation_strategy == skynet_pb2.DateTimeAnonimisation.DATETIME_NOISE:
+        elif anonimisation_strategy == skynet_pb2.DATETIME_NOISE:
             anonimised_df.datetime_noise(
                 columns=datetime_col, inplace=True)
 
@@ -160,10 +160,10 @@ def kanonyme(df: pd.DataFrame, config: skynet_pb2.KAnonymeStrategy, request: sky
                           feature_columns,
                           config.studied_column)
 
-    if (config.algorithm == skynet_pb2.AnonymApproach.K_Anonym):
+    if (config.algorithm == skynet_pb2.K_Anonym):
         rows = p.anonymize_k_anonymity(k=config.k)
-    elif (config.algorithm == skynet_pb2.AnonymApproach.L_Diversity):
+    elif (config.algorithm == skynet_pb2.L_Diversity):
         rows = p.anonymize_l_diversity(k=config.k)
-    elif (config.algorithm == skynet_pb2.AnonymApproach.T_CLOSENESS):
+    elif (config.algorithm == skynet_pb2.T_CLOSENESS):
         rows = p.anonymize_t_closeness(k=config.k)
     return pd.DataFrame(rows)
