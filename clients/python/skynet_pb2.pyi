@@ -215,10 +215,12 @@ class SydoniaFileConfig(_message.Message):
     def __init__(self, file_path: _Optional[str] = ..., used_cols: _Optional[_Mapping[str, ColConfig]] = ..., deserialization_config: _Optional[_Union[DeserializationConfig, _Mapping]] = ...) -> None: ...
 
 class SynthetiseStrategy(_message.Message):
-    __slots__ = ["epsilon"]
+    __slots__ = ["epsilon", "number_of_records"]
     EPSILON_FIELD_NUMBER: _ClassVar[int]
+    NUMBER_OF_RECORDS_FIELD_NUMBER: _ClassVar[int]
     epsilon: float
-    def __init__(self, epsilon: _Optional[float] = ...) -> None: ...
+    number_of_records: int
+    def __init__(self, epsilon: _Optional[float] = ..., number_of_records: _Optional[int] = ...) -> None: ...
 
 class VisualizerRequest(_message.Message):
     __slots__ = ["deserialization_config", "file_path", "minio_info"]

@@ -6,7 +6,26 @@ from src.protos import skynet_pb2
 import s3fs
 import pandas as pd
 import numpy as np
-print("imported anonimsation")
+
+
+def from_message_map_to_map(message_map: dict[str, skynet_pb2.ColConfig]):
+    values = {}
+    for k, v in message_map.items():
+        if v.col_types == skynet_pb2.ColType_Object:
+            values[k] = np.object_
+        elif v.col_types == skynet_pb2.ColType_Int64:
+            values[k] = np.int64
+        elif v.col_types == skynet_pb2.ColType_Float64:
+            values[k] = np.float64
+        elif v.col_types == skynet_pb2.ColType_Bool:
+            values[k] = np.bool_
+        elif v.col_types == skynet_pb2.ColType_DateTime64:
+            values[k] = np.datetime64
+        elif v.col_types == skynet_pb2.ColType_TimeDeltaMs:
+            values[k] = np.timedelta64
+        elif v.col_types == skynet_pb2.ColType_Category:
+            values[k] = "category"
+    return values
 
 
 def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseResponse:
@@ -21,7 +40,7 @@ def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseRespo
                          usecols=[
                              key for key in request.deserialization_config.used_cols.keys()],
                          sep=request.deserialization_config.separator,
-                         dtype=request.deserialization_config.used_cols)
+                         dtype=from_message_map_to_map(request.deserialization_config.used_cols))
 
     if ("k_anonyme" == request.WhichOneof('anonimisationStrategy')):
         df = kanonyme(df, request.k_anonyme, request)
@@ -31,11 +50,12 @@ def anonimise(request: skynet_pb2.AnonimiseRequest) -> skynet_pb2.AnonimiseRespo
         df = synthetise(df, request.synthetise, request)
 
     with fs.open(request.serialization_config.file_path, 'wb') as file_out:
-        csv_buffer = StringIO()
-        df.to_csv(path_or_buf=csv_buffer,
+        df.to_csv(path_or_buf=file_out,
                   sep=request.serialization_config.separator,
                   header=request.serialization_config.no_header)
-        file_out.write(csv_buffer.getvalue())
+    return skynet_pb2.AnonimiseResponse(
+        anonimised_file_path=request.serialization_config.file_path,
+    )
 
 
 def synthetise(df: pd.DataFrame, config: skynet_pb2.SynthetiseStrategy, request: skynet_pb2.AnonimiseRequest) -> pd.DataFrame:
@@ -46,10 +66,8 @@ def synthetise(df: pd.DataFrame, config: skynet_pb2.SynthetiseStrategy, request:
     dataset = DataSet(df, categories=[used_col for used_col in request.used_cols.keys(
     ) if (request.used_cols[used_col].col_types == skynet_pb2.ColType_Category)])
 
-    return dataset.synthesize(epsilon=config.epsilon,
-                              records=15000,
-                              retains=[
-                                  key for key in request.used_cols.keys()])
+    return dataset.synthesize(epsilon=config.epsilon, records=config.number_of_records, pseudonyms=[used_col for used_col in request.used_cols.keys(
+    ) if (request.used_cols[used_col].to_psuedonimise == True)])
 
 
 def naive(df: pd.DataFrame, config: skynet_pb2.NaiveStrategy, request: skynet_pb2.AnonimiseRequest) -> pd.DataFrame:

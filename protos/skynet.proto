@@ -124,6 +124,7 @@ message ColConfig {
 
 message SynthetiseStrategy {
   float epsilon = 1;
+  int32 number_of_records = 2;
 }
 
 message NaiveStrategy {

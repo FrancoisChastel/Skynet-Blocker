@@ -406,6 +406,10 @@
         "epsilon": {
           "type": "number",
           "format": "float"
+        },
+        "numberOfRecords": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
