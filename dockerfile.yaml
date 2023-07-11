@@ -3,7 +3,7 @@ RUN apt-get update
 
 WORKDIR /skynet
 
-COPY requirements.txt requirements.txt
+COPY ./requirements.txt /skynet/requirements.txt
 RUN python -m pip install -r /skynet/requirements.txt
 
 COPY . .
